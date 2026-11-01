@@ -24,7 +24,7 @@ hs_err_pid*
 replay_pid*
 
 
-# Minecraft dev .gitignore
+# ------ Minecraft dev .gitignore ------
 # Gradle
 .gradle/
 build/
