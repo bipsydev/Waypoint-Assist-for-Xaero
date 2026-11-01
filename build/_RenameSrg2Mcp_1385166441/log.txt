@@ -1,0 +1,16 @@
+Java Launcher: C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot\bin\java.exe
+Arguments: '--task, SRG_TO_MCP, --input, C:\Users\lilit\.gradle\caches\modules-2\files-2.1\maven.modrinth\xaeros-minimap\forge-1.20.1-26.4.2\8f5f747a33e787aaa3827b00eb0ad098966499ff\xaeros-minimap-forge-1.20.1-26.4.2.jar, --output, C:\Users\lilit\.gradle\caches\forge_gradle\deobf_dependencies\maven\modrinth\xaeros-minimap\forge-1.20.1-26.4.2_mapped_official_1.20.1\xaeros-minimap-forge-1.20.1-26.4.2_mapped_official_1.20.1.jar, --mcp, C:\Users\lilit\.gradle\caches\forge_gradle\mcp_repo\net\minecraft\mapping\1.20.1\mapping-1.20.1-mapping.zip, --strip-signatures'
+Classpath:
+ - C:\Users\lilit\.gradle\caches\forge_gradle\maven_downloader\net\minecraftforge\installertools\1.4.4\installertools-1.4.4-fatjar.jar
+Working directory: C:\Users\lilit\IdeaProjects\Waypoint Assist for Xaero\build\_RenameSrg2Mcp_1385166441
+Main class: net.minecraftforge.installertools.ConsoleTool
+====================================
+Task: SRG_TO_MCP
+Input:  C:\Users\lilit\.gradle\caches\modules-2\files-2.1\maven.modrinth\xaeros-minimap\forge-1.20.1-26.4.2\8f5f747a33e787aaa3827b00eb0ad098966499ff\xaeros-minimap-forge-1.20.1-26.4.2.jar
+Output: C:\Users\lilit\.gradle\caches\forge_gradle\deobf_dependencies\maven\modrinth\xaeros-minimap\forge-1.20.1-26.4.2_mapped_official_1.20.1\xaeros-minimap-forge-1.20.1-26.4.2_mapped_official_1.20.1.jar
+MCP:    C:\Users\lilit\.gradle\caches\forge_gradle\mcp_repo\net\minecraft\mapping\1.20.1\mapping-1.20.1-mapping.zip
+Loading MCP Data
+Processing ZIP file
+Stripped Manifest of sha digests
+Stripped Manifest of sha digests
+Process complete
