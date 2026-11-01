@@ -21,5 +21,5 @@ public class WaypointPreset
         this.abbreviation = abbreviation;
         this.colorIndex = colorIndex;
     }
-    
+
 }
