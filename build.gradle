@@ -168,8 +168,7 @@ dependencies {
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
     // runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 
-    implementation fg.deobf("maven.modrinth:xaeros-minimap:forge-1.20.1-26.4.2")
-    implementation fg.deobf("maven.modrinth:xaeros-open-hud:forge-1.20.1-1.38.5")
+    implementation fg.deobf("maven.modrinth:xaeros-minimap:A1JacFsh")
 
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository

@@ -2,11 +2,13 @@
   "required": true,
   "minVersion": "0.8",
   "package": "dev.bipsy.xaero_waypoint_assist.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "xaero_waypoint_assist.refmap.json",
   "mixins": [
   ],
   "client": [
+    "MixinGuiAddWaypoint",
+    "ScreenAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
