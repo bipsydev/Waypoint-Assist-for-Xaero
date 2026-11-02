@@ -17,15 +17,34 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
+/**
+ * The GUI screen that opens when you select this mod's Config button in the Mods menu from Forge.
+ * Displays info about the PresetManager (lists out all saved presets and allows reordering & management).
+ */
 public class PresetManagerConfigScreen extends Screen {
+
+    /// The previous screen that called this one.
     private final Screen parent;
+
+    /// The list of presets stored in the PresetManager global instance.
     private PresetList presetList;
 
+
+    /**
+     * Construct the GUI screen, from given parent screen.
+     * @param parent The screen that created this one.
+     */
     public PresetManagerConfigScreen(Screen parent) {
         super(Component.literal("Waypoint Presets Configuration"));
         this.parent = parent;
     }
 
+
+    /**
+     * Initializes the screen GUI layout, overriden from Minecraft's `Screen` class.
+     * Creates the action buttons on the bottom, and the large scroll view of saved presets.
+     */
     @Override
     protected void init() {
         this.presetList = new PresetList(this.minecraft, this.width, this.height, 32, this.height - 42, 26);
@@ -71,11 +90,19 @@ public class PresetManagerConfigScreen extends Screen {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
+
+    /**
+     * Inner class that represents the scrollable list GUI,
+     * extended from Minecraft's GUI library.
+     */
     public class PresetList extends ContainerObjectSelectionList<PresetList.PresetEntry> {
+
+        /// Pass-through constructor
         public PresetList(Minecraft minecraft, int width, int height, int y0, int y1, int itemHeight) {
             super(minecraft, width, height, y0, y1, itemHeight);
         }
 
+        /// Refreshes the entries in the GUI by reloading from the PresetManager saved list.
         public void refreshEntries() {
             this.clearEntries();
             List<WaypointPreset> presets = PresetManager.getInstance().getPresets();
@@ -94,15 +121,32 @@ public class PresetManagerConfigScreen extends Screen {
             return this.getRowLeft() + this.getRowWidth() + 6;
         }
 
+
+        /**
+         * Inner-inner class that represents an entry in the GUI of the list of presets,
+         * extended from Minecraft's GUI library.
+         */
         public class PresetEntry extends ContainerObjectSelectionList.Entry<PresetEntry> {
+            /// The preset this GUI entry is referring to.
             private final WaypointPreset preset;
+            /// The index into the GUI scrollable list that this entry resides at
             private final int index;
+            /// The list of buttons that are shown on this entry
             private final List<Button> children = new ArrayList<>();
+
             private final Button editButton;
             private final Button deleteButton;
             private final Button upButton;
             private final Button downButton;
 
+
+            /**
+             * Constructor that creates a GUI entry in the WaypointPreset scrollable list.
+             * This also builds the child buttons and adds them.
+             * @param preset The preset from the PresetManager to refer to from this entry.
+             * @param index The index into the GUI widget list.
+             * @param totalCount The total count of entries in the parent list (?)
+             */
             public PresetEntry(WaypointPreset preset, int index, int totalCount) {
                 this.preset = preset;
                 this.index = index;
@@ -144,6 +188,10 @@ public class PresetManagerConfigScreen extends Screen {
                 this.children.add(this.downButton);
             }
 
+            /**
+             * Rendering implementation for the entry in the list.
+             * Handles placement of buttons, etc.
+             */
             @Override
             public void render(GuiGraphics guiGraphics, int entryIndex, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float partialTick) {
                 WaypointColor color = null;
@@ -180,11 +228,18 @@ public class PresetManagerConfigScreen extends Screen {
                 this.editButton.render(guiGraphics, mouseX, mouseY, partialTick);
             }
 
+            /**
+             * Get the children widgets to this entry (the buttons)
+             * @return a Java `List`.
+             */
             @Override
             public List<? extends GuiEventListener> children() {
                 return this.children;
             }
 
+            /**
+             * TODO: needed?
+             */
             @Override
             public List<? extends NarratableEntry> narratables() {
                 return this.children;
