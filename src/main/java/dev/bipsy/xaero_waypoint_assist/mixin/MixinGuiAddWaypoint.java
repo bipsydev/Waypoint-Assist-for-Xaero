@@ -25,27 +25,42 @@ import xaero.lib.client.gui.widget.dropdown.DropDownWidget;
 import java.util.Collections;
 import java.util.List;
 
-@Mixin(value = GuiAddWaypoint.class, remap = false)
-public abstract class MixinGuiAddWaypoint
-{
-    @Shadow private EditBox nameTextField;
-    @Shadow private EditBox initialTextField;
-    @Shadow private DropDownWidget colorDD;
-    @Shadow private WaypointEditForm getCurrent() {
-        throw new AssertionError();
-    }
-    @Shadow private void updateConfirmButton() {
-        throw new AssertionError();
-    }
 
+/**
+ * Mixin that modifies the "Add Waypoint" screen from Xaero's GuiAddWaypoint class to add our preset selection drop-box,
+ * and associated logic to fill in the form fields from the preset selected info.
+ */
+@Mixin(value = GuiAddWaypoint.class, remap = false)
+public abstract class MixinGuiAddWaypoint {
+
+    // Shadowed variables from the mixin target class, so we can modify them:
+    /// The waypoint name text input box GUI widget.
+    @Shadow private EditBox nameTextField;
+    /// The abbreviation/initial input box.
+    @Shadow private EditBox initialTextField;
+    /// The color drop-down selection box widget.
+    @Shadow private DropDownWidget colorDD;
+
+    // Shadowed methods allow us to access their original implementation in the class, so we can call it from here.
+    /// Get the current Waypoint editing form that the user has entered.
+    @Shadow private WaypointEditForm getCurrent() { throw new AssertionError(); }
+    /// Checks if the confirm button should be active and updates it accordingly.
+    @Shadow private void updateConfirmButton() { throw new AssertionError(); }
+
+    /// Overwrite this constant in the original class to be 4 instead of 2 (abbreviation/initial character limit)
     @ModifyConstant(method = "checkFields", constant = @Constant(intValue = 2), remap = false)
     private int modifyInitialMaxLength(int original) {
         return 4;
     }
 
+
+    /**
+     * Mixin injection into the `init` method that places this code at the tail end.
+     * This sets up our preset drop-down.
+     * @param ci
+     */
     @Inject(method = "init", at = @At("TAIL"), remap = false)
-    private void injectPresetDropdown(CallbackInfo ci)
-    {
+    private void injectPresetDropdown(CallbackInfo ci) {
         if (this.initialTextField != null) {
             this.initialTextField.setMaxLength(4);
         }
