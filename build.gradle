@@ -136,10 +136,12 @@ repositories {
 
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:flat_dir_resolver
+    // We have XaeroLib located in ./libs, so we declare the directory here as a flatDir repository to reference it later.
     flatDir {
         dir 'libs'
     }
 
+    // This adds the Modrith Maven repository for dependencies (used for Xaero's Minimap and Xaero's World Map itself).
     exclusiveContent {
         forRepository {
             maven {
@@ -168,7 +170,12 @@ dependencies {
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
     // runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 
+    // Add an implementation dependency on Xaero's Minimap mod from Modrinth.
+    // `implementation` here is the preferred way to declare mod dependencies, as it will automatically handle remapping and shading.
+    // The `fg.deobf()` function is used to ensure the dependency is remapped to our development mappings.
     implementation fg.deobf("maven.modrinth:xaeros-minimap:A1JacFsh")
+    // Add a compileOnly dependency on Xaero's Library mod from Modrinth, which is required by Xaero's Minimap.
+    // `compileOnly` will not automatically handle remapping and shading. If you use `compileOnly`, you must also add a runtime dependency for the mod
     compileOnly fg.deobf("blank:xaerolib-forge-1.20.1:1.7.1")
 
 
