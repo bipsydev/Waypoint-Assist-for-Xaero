@@ -19,3 +19,12 @@ This mod is for Minecraft 1.20.1, and uses Forge 47.4.13 (__targets TFG-Modern *
 - [ ] __Abbreviation Formatting__: Option to render the last 2 characters of an abbreviation in a smaller font.
 - [ ] __Custom Color Presets__: Allow the input of a custom color, and save new color presets for use later.
 - [ ] __Bulk Organization Operations__: Waypoint organization operations to bulk rename, change color, move to different waypoint set, and more based on search/regex criteria.
+
+
+## Current To-Do
+- [ ] move down the Presets dropdown menu, either to the bottom of the GUI or move the entire GUI down enough so it isn't clipping the title.
+- [ ] Toast popups for adding/replacing/editing/deleting presets.
+- [ ] Add a confirmation for replacing and deleting presets, and for reverting back to default preset database.
+- [ ] Configure dependencies so that it can use either Xaero's Minimap or Xaero's World Map, and not require just the Minimap.
+- [ ] Implement import/export of presets .json file to allow sharing of presets between users.
+- [ ] Implement auto-waypoints for TFG/TFC blocks/items, and allow users to add their own custom auto-waypoint associations.
