@@ -26,5 +26,6 @@ This mod is for Minecraft 1.20.1, and uses Forge 47.4.13 (__targets TFG-Modern *
 - [ ] Toast popups for adding/replacing/editing/deleting presets.
 - [ ] Add a confirmation for replacing and deleting presets, and for reverting back to default preset database.
 - [ ] Configure dependencies so that it can use either Xaero's Minimap or Xaero's World Map, and not require just the Minimap.
+- [ ] Fix Bug: when changing the window size on the "New Preset" menu, the EditBoxes reset to blank.
 - [ ] Implement import/export of presets .json file to allow sharing of presets between users.
 - [ ] Implement auto-waypoints for TFG/TFC blocks/items, and allow users to add their own custom auto-waypoint associations.
