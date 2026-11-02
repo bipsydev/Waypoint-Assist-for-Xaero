@@ -113,8 +113,17 @@ public class EditPresetScreen extends ScreenBase implements IDropDownWidgetCallb
         if (this.editIndex >= 0) {
             List<WaypointPreset> presets = PresetManager.getInstance().getPresets();
             if (this.editIndex < presets.size()) {
-                presets.set(this.editIndex, saved);
-                PresetManager.getInstance().setPresets(presets);
+                boolean duplicate = false;
+                for (int i = 0; i < presets.size(); i++) {
+                    if (i != this.editIndex && saved.equals(presets.get(i))) {
+                        duplicate = true;
+                        break;
+                    }
+                }
+                if (!duplicate) {
+                    presets.set(this.editIndex, saved);
+                    PresetManager.getInstance().setPresets(presets);
+                }
             }
         } else {
             PresetManager.getInstance().addPreset(saved);

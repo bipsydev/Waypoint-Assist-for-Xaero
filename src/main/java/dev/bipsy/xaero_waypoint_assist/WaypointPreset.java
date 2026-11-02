@@ -1,5 +1,8 @@
 package dev.bipsy.xaero_waypoint_assist;
 
+import java.util.Locale;
+import java.util.Objects;
+
 public class WaypointPreset
 {
     // The name of the waypoint.
@@ -21,9 +24,36 @@ public class WaypointPreset
 
     public WaypointPreset(String name, String abbreviation, int colorIndex)
     {
-        this.name = name;
-        this.abbreviation = abbreviation != null && abbreviation.length() > 4 ? abbreviation.substring(0, 4) : abbreviation;
+        this.name = name != null ? name.trim() : "";
+        String trimmedAbbr = abbreviation != null ? abbreviation.trim() : "";
+        this.abbreviation = trimmedAbbr.length() > 4 ? trimmedAbbr.substring(0, 4) : trimmedAbbr;
         this.colorIndex = colorIndex;
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WaypointPreset that = (WaypointPreset) o;
+        if (this.colorIndex != that.colorIndex) return false;
+
+        String thisName = this.name != null ? this.name.trim() : "";
+        String thatName = that.name != null ? that.name.trim() : "";
+        if (!thisName.equalsIgnoreCase(thatName)) return false;
+
+        // Don't check against abbreviation for now
+        //String thisAbbr = this.abbreviation != null ? this.abbreviation.trim() : "";
+        //String thatAbbr = that.abbreviation != null ? that.abbreviation.trim() : "";
+        //return thisAbbr.equalsIgnoreCase(thatAbbr);
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        String cleanName = this.name != null ? this.name.trim().toLowerCase(Locale.ROOT) : "";
+        String cleanAbbr = this.abbreviation != null ? this.abbreviation.trim().toLowerCase(Locale.ROOT) : "";
+        return Objects.hash(cleanName, cleanAbbr, this.colorIndex);
+    }
 }

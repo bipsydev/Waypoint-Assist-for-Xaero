@@ -37,11 +37,55 @@ public class PresetManager {
         return new ArrayList<>(this.presets);
     }
 
+    /**
+     * Search the preset manager for a preset that matches the one given, if it already exists.
+     * @param preset The preset information to search for in the manager.
+     * @return The instance of the preset that exists already in the manager that matches the given preset.
+     */
+    public synchronized WaypointPreset get(WaypointPreset preset) {
+        if (preset == null) {
+            return null;
+        }
+        for (WaypointPreset existing : this.presets) {
+            if (preset.equals(existing)) {
+                return existing;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the index/position of this preset in the preset manager's list of presets.
+     * @param preset The object reference to find the index of.
+     * @return The index of `preset` within our list of presets, or -1 if not within the preset manager.
+     */
+    public synchronized int find(WaypointPreset preset) {
+        if (preset == null) {
+            return -1;
+        }
+        for (int i = 0; i < this.presets.size(); i++) {
+            WaypointPreset existing = this.presets.get(i);
+            if (preset.equals(existing)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public synchronized boolean contains(WaypointPreset preset) {
+        return get(preset) != null;
+    }
+
     public synchronized void setPresets(List<WaypointPreset> newPresets) {
         this.presets.clear();
         if (newPresets != null) {
             for (WaypointPreset preset : newPresets) {
                 if (preset != null) {
+                    // if an existing waypoint with same name & color exists, remove it and overwrite with new secondary attributes (ie, abbrevation)
+                    WaypointPreset existing = get(preset);
+                    if (existing != null) {
+                        this.presets.remove(existing);
+                    }
                     this.presets.add(new WaypointPreset(preset.name, preset.abbreviation, preset.colorIndex));
                 }
             }
@@ -49,11 +93,20 @@ public class PresetManager {
         save();
     }
 
-    public synchronized void addPreset(WaypointPreset preset) {
+    public synchronized boolean addPreset(WaypointPreset preset) {
         if (preset != null) {
-            this.presets.add(preset);
+            // if an existing waypoint with same name & color exists, remove it and overwrite with new secondary attributes (ie, abbrevation)
+            WaypointPreset existing = get(preset);
+            int existingIdx = this.presets.size(); // default place new preset at end of list
+            if (existing != null) {
+                existingIdx = find(existing); // capture the index/position of the existing preset if we are replacing it
+                this.presets.remove(existing);
+            }
+            this.presets.add(existingIdx, preset);
             save();
+            return true;
         }
+        return false;
     }
 
     public synchronized void removePreset(int index) {
@@ -75,7 +128,14 @@ public class PresetManager {
             List<WaypointPreset> loaded = GSON.fromJson(reader, listType);
             this.presets.clear();
             if (loaded != null && !loaded.isEmpty()) {
-                this.presets.addAll(loaded);
+                for (WaypointPreset preset : loaded) {
+                    if (preset != null && !contains(preset)) {
+                        this.presets.add(preset);
+                    }
+                }
+                if (this.presets.isEmpty()) {
+                    loadDefaults();
+                }
             } else {
                 loadDefaults();
             }
@@ -90,6 +150,24 @@ public class PresetManager {
             if (configPath.getParent() != null) {
                 Files.createDirectories(configPath.getParent());
             }
+            List<WaypointPreset> uniquePresets = new ArrayList<>();
+            for (WaypointPreset preset : this.presets) {
+                if (preset != null) {
+                    boolean exists = false;
+                    for (WaypointPreset u : uniquePresets) {
+                        if (preset.equals(u)) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        uniquePresets.add(preset);
+                    }
+                }
+            }
+            this.presets.clear();
+            this.presets.addAll(uniquePresets);
+
             try (Writer writer = Files.newBufferedWriter(configPath)) {
                 GSON.toJson(this.presets, writer);
             }
