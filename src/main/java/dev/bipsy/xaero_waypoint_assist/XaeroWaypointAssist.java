@@ -1,7 +1,7 @@
 package dev.bipsy.xaero_waypoint_assist;
 
 import com.mojang.logging.LogUtils;
-import dev.bipsy.xaero_waypoint_assist.gui.PresetConfigScreen;
+import dev.bipsy.xaero_waypoint_assist.gui.PresetManagerConfigScreen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,7 +33,7 @@ public class XaeroWaypointAssist {
         // Register in-game config screen under Mods menu
         ModLoadingContext.get().registerExtensionPoint(
                 ConfigScreenHandler.ConfigScreenFactory.class,
-                () -> new ConfigScreenHandler.ConfigScreenFactory((mc, screen) -> new PresetConfigScreen(screen))
+                () -> new ConfigScreenHandler.ConfigScreenFactory((mc, screen) -> new PresetManagerConfigScreen(screen))
         );
 
         // Register ourselves for server and other game events we are interested in

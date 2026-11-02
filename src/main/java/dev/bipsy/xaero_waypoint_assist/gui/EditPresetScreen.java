@@ -197,7 +197,7 @@ public class EditPresetScreen extends ScreenBase implements IDropDownWidgetCallb
         // if on client...
         if (this.minecraft != null) {
             // if the parent screen is our preset configuration screen, refresh the list to show updates.
-            if (this.parentScreen instanceof PresetConfigScreen configScreen) {
+            if (this.parentScreen instanceof PresetManagerConfigScreen configScreen) {
                 configScreen.refreshList();
             }
             // move us back to the previous (parent) screen

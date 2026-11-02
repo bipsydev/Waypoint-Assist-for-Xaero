@@ -17,11 +17,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PresetConfigScreen extends Screen {
+public class PresetManagerConfigScreen extends Screen {
     private final Screen parent;
     private PresetList presetList;
 
-    public PresetConfigScreen(Screen parent) {
+    public PresetManagerConfigScreen(Screen parent) {
         super(Component.literal("Waypoint Presets Configuration"));
         this.parent = parent;
     }
@@ -86,7 +86,7 @@ public class PresetConfigScreen extends Screen {
 
         @Override
         public int getRowWidth() {
-            return Math.min(340, PresetConfigScreen.this.width - 20);
+            return Math.min(340, PresetManagerConfigScreen.this.width - 20);
         }
 
         @Override
@@ -108,14 +108,14 @@ public class PresetConfigScreen extends Screen {
                 this.index = index;
 
                 this.editButton = Button.builder(Component.literal("Edit"), b -> {
-                    if (PresetConfigScreen.this.minecraft != null) {
-                        PresetConfigScreen.this.minecraft.setScreen(new EditPresetScreen(PresetConfigScreen.this, preset, index));
+                    if (PresetManagerConfigScreen.this.minecraft != null) {
+                        PresetManagerConfigScreen.this.minecraft.setScreen(new EditPresetScreen(PresetManagerConfigScreen.this, preset, index));
                     }
                 }).bounds(0, 0, 42, 20).build();
 
                 this.deleteButton = Button.builder(Component.literal("X"), b -> {
                     PresetManager.getInstance().removePreset(index);
-                    PresetConfigScreen.this.refreshList();
+                    PresetManagerConfigScreen.this.refreshList();
                 }).bounds(0, 0, 20, 20).build();
 
                 this.upButton = Button.builder(Component.literal("▲"), b -> {
@@ -123,7 +123,7 @@ public class PresetConfigScreen extends Screen {
                         List<WaypointPreset> presets = PresetManager.getInstance().getPresets();
                         Collections.swap(presets, index, index - 1);
                         PresetManager.getInstance().setPresets(presets);
-                        PresetConfigScreen.this.refreshList();
+                        PresetManagerConfigScreen.this.refreshList();
                     }
                 }).bounds(0, 0, 20, 20).build();
                 this.upButton.active = index > 0;
@@ -133,7 +133,7 @@ public class PresetConfigScreen extends Screen {
                         List<WaypointPreset> presets = PresetManager.getInstance().getPresets();
                         Collections.swap(presets, index, index + 1);
                         PresetManager.getInstance().setPresets(presets);
-                        PresetConfigScreen.this.refreshList();
+                        PresetManagerConfigScreen.this.refreshList();
                     }
                 }).bounds(0, 0, 20, 20).build();
                 this.downButton.active = index < totalCount - 1;
@@ -160,7 +160,7 @@ public class PresetConfigScreen extends Screen {
                 }
                 displayText.append(")");
 
-                guiGraphics.drawString(PresetConfigScreen.this.font, displayText, left + 4, top + 6, 0xFFFFFF);
+                guiGraphics.drawString(PresetManagerConfigScreen.this.font, displayText, left + 4, top + 6, 0xFFFFFF);
 
                 int right = left + entryWidth;
                 this.deleteButton.setX(right - 22);
