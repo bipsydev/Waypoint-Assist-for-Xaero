@@ -11,7 +11,9 @@ import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import xaero.common.gui.GuiAddWaypoint;
@@ -36,9 +38,18 @@ public abstract class MixinGuiAddWaypoint
         throw new AssertionError();
     }
 
+    @ModifyConstant(method = "checkFields", constant = @Constant(intValue = 2), remap = false)
+    private int modifyInitialMaxLength(int original) {
+        return 4;
+    }
+
     @Inject(method = "init", at = @At("TAIL"), remap = false)
     private void injectPresetDropdown(CallbackInfo ci)
     {
+        if (this.initialTextField != null) {
+            this.initialTextField.setMaxLength(4);
+        }
+
         List<WaypointPreset> loadedPresets = PresetManager.getInstance().getPresets();
         final List<WaypointPreset> presets = loadedPresets != null ? loadedPresets : Collections.emptyList();
 
@@ -109,7 +120,9 @@ public abstract class MixinGuiAddWaypoint
 
                         String initial = this.initialTextField != null ? this.initialTextField.getValue().trim() : "";
                         if (initial.isEmpty()) {
-                            initial = name.length() >= 2 ? name.substring(0, 2).toUpperCase() : name.toUpperCase();
+                            initial = name.length() >= 4 ? name.substring(0, 4).toUpperCase() : name.toUpperCase();
+                        } else if (initial.length() > 4) {
+                            initial = initial.substring(0, 4);
                         }
                         int colorIndex = 0;
                         WaypointEditForm currentForm = this.getCurrent();

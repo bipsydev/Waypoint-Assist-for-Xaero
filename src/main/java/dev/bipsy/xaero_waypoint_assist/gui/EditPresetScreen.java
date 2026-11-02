@@ -50,7 +50,7 @@ public class EditPresetScreen extends ScreenBase implements IDropDownWidgetCallb
         // Abbreviation Field
         this.abbreviationField = new EditBox(this.font, centerX - fieldWidth / 2, 95, fieldWidth, fieldHeight, Component.literal("Abbreviation"));
         this.abbreviationField.setValue(this.existingPreset != null ? this.existingPreset.abbreviation : "");
-        this.abbreviationField.setMaxLength(8);
+        this.abbreviationField.setMaxLength(4);
         this.addRenderableWidget(this.abbreviationField);
 
         // Color DropDownWidget
@@ -104,7 +104,9 @@ public class EditPresetScreen extends ScreenBase implements IDropDownWidgetCallb
             name = "New Preset";
         }
         if (abbreviation.isEmpty()) {
-            abbreviation = name.length() >= 2 ? name.substring(0, 2).toUpperCase() : name.toUpperCase();
+            abbreviation = name.length() >= 4 ? name.substring(0, 4).toUpperCase() : name.toUpperCase();
+        } else if (abbreviation.length() > 4) {
+            abbreviation = abbreviation.substring(0, 4);
         }
 
         WaypointPreset saved = new WaypointPreset(name, abbreviation, this.selectedColorIndex);

@@ -22,7 +22,7 @@ public class WaypointPreset
     public WaypointPreset(String name, String abbreviation, int colorIndex)
     {
         this.name = name;
-        this.abbreviation = abbreviation;
+        this.abbreviation = abbreviation != null && abbreviation.length() > 4 ? abbreviation.substring(0, 4) : abbreviation;
         this.colorIndex = colorIndex;
     }
 
