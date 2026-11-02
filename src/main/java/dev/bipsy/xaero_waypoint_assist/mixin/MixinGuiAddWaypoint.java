@@ -1,5 +1,6 @@
 package dev.bipsy.xaero_waypoint_assist.mixin;
 
+import dev.bipsy.xaero_waypoint_assist.PresetManager;
 import dev.bipsy.xaero_waypoint_assist.WaypointPreset;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
@@ -16,7 +17,6 @@ import xaero.common.gui.GuiAddWaypoint;
 import xaero.common.gui.WaypointEditForm;
 import xaero.hud.minimap.waypoint.WaypointColor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(value = GuiAddWaypoint.class, remap = false)
@@ -31,15 +31,15 @@ public abstract class MixinGuiAddWaypoint
     @Inject(method = "init", at = @At("TAIL"), remap = false)
     private void injectPresetDropdown(CallbackInfo ci)
     {
-        List<WaypointPreset> mockPresets = new ArrayList<>();
-        mockPresets.add(new WaypointPreset("Base", "BS", 2));
-        mockPresets.add(new WaypointPreset("Village", "VL", 4));
-        mockPresets.add(new WaypointPreset("Nether Portal", "NP", 1));
+        List<WaypointPreset> presets = PresetManager.getInstance().getPresets();
+        if (presets == null || presets.isEmpty()) {
+            return;
+        }
 
         Screen screen = (Screen) (Object) this;
 
         CycleButton<WaypointPreset> presetDropdown = CycleButton.builder((WaypointPreset preset) -> Component.literal(preset.name))
-                .withValues(mockPresets)
+                .withValues(presets)
                 .create(screen.width / 2 - 100, 10, 200, 20, Component.literal("Preset"), (button, selectedPreset) -> {
                     if (this.nameTextField != null) {
                         this.nameTextField.setValue(selectedPreset.name);
@@ -53,6 +53,9 @@ public abstract class MixinGuiAddWaypoint
                     }
                 });
 
-        ((ScreenAccessor) screen).invokeAddRenderableWidget(presetDropdown);
+        ScreenAccessor accessor = (ScreenAccessor) screen;
+        accessor.getRenderables().add(presetDropdown);
+        accessor.getChildren().add(presetDropdown);
+        accessor.getNarratables().add(presetDropdown);
     }
 }

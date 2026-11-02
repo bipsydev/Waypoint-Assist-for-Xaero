@@ -15,6 +15,10 @@ public class WaypointPreset
     public int colorIndex;
 
 
+    public WaypointPreset()
+    {
+    }
+
     public WaypointPreset(String name, String abbreviation, int colorIndex)
     {
         this.name = name;

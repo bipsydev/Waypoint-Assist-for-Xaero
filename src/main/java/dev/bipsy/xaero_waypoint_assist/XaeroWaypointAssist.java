@@ -1,11 +1,14 @@
 package dev.bipsy.xaero_waypoint_assist;
 
 import com.mojang.logging.LogUtils;
+import dev.bipsy.xaero_waypoint_assist.gui.PresetConfigScreen;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -26,6 +29,12 @@ public class XaeroWaypointAssist {
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
+
+        // Register in-game config screen under Mods menu
+        ModLoadingContext.get().registerExtensionPoint(
+                ConfigScreenHandler.ConfigScreenFactory.class,
+                () -> new ConfigScreenHandler.ConfigScreenFactory((mc, screen) -> new PresetConfigScreen(screen))
+        );
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
