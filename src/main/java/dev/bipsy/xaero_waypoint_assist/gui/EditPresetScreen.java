@@ -185,7 +185,7 @@ public class EditPresetScreen extends ScreenBase implements IDropDownWidgetCallb
             }
             // index given was too large
             else {
-                LOGGER.warn("EditPresetScreen.editIndex too large: attempting to save an existing preset with index editIndex=" + this.editIndex + ", but PresetManager's size is presets.size()=" + presets.size() + "!");
+                LOGGER.warn("EditPresetScreen.editIndex too large: attempting to save an existing preset with index editIndex={}, but PresetManager's size is presets.size()={}!", this.editIndex, presets.size());
             }
         }
         // ... or if we are adding a new preset...
