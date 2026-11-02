@@ -7,8 +7,7 @@
   "mixins": [
   ],
   "client": [
-    "MixinGuiAddWaypoint",
-    "ScreenBaseAccessor"
+    "MixinGuiAddWaypoint"
   ],
   "injectors": {
     "defaultRequire": 1

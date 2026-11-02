@@ -22,6 +22,7 @@ import xaero.hud.minimap.waypoint.WaypointColor;
 import xaero.lib.client.gui.ScreenBase;
 import xaero.lib.client.gui.widget.dropdown.DropDownWidget;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,7 +60,7 @@ public abstract class MixinGuiAddWaypoint {
      * This sets up our preset drop-down.
      * @param ci
      */
-    @Inject(method = "init", at = @At("TAIL"), remap = false)
+    @Inject(method = {"init", "m_7856_"}, at = @At("TAIL"), remap = false)
     private void injectPresetDropdown(CallbackInfo ci) {
         if (this.initialTextField != null) {
             this.initialTextField.setMaxLength(4);
@@ -69,7 +70,6 @@ public abstract class MixinGuiAddWaypoint {
         final List<WaypointPreset> presets = loadedPresets != null ? loadedPresets : Collections.emptyList();
 
         Screen screen = (Screen) (Object) this;
-        ScreenBase screenBase = (ScreenBase) (Object) this;
 
         Component[] options = new Component[presets.size() + 3];
         options[0] = Component.literal("No Preset");
@@ -95,7 +95,7 @@ public abstract class MixinGuiAddWaypoint {
                 .setY(10)
                 .setW(200)
                 .setSelected(0)
-                .setContainer(screenBase)
+                .setContainer((ScreenBase) (Object) this)
                 .setNarrationTitle(Component.literal("Preset"))
                 .setCallback((dropdown, selectedIndex) -> {
                     if (selectedIndex > 0 && selectedIndex <= presets.size()) {
@@ -162,6 +162,21 @@ public abstract class MixinGuiAddWaypoint {
                 })
                 .build();
 
-        ((ScreenBaseAccessor) screenBase).invokeAddWidget(presetDropdown);
+        addWidgetCompat((Screen) (Object) this, presetDropdown);
+    }
+
+    private static void addWidgetCompat(Screen screen, DropDownWidget widget) {
+        try {
+            Method addWidget;
+            try {
+                addWidget = Screen.class.getDeclaredMethod("addWidget", net.minecraft.client.gui.components.events.GuiEventListener.class);
+            } catch (NoSuchMethodException ignored) {
+                addWidget = Screen.class.getDeclaredMethod("m_7787_", net.minecraft.client.gui.components.events.GuiEventListener.class);
+            }
+            addWidget.setAccessible(true);
+            addWidget.invoke(screen, widget);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Unable to register the Xaero waypoint preset dropdown", e);
+        }
     }
 }
