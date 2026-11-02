@@ -5,7 +5,7 @@ Xaero's Minimap/Worldmap addon that adds automatic waypoints as well as presets,
 Designed for use with TerraFirmaGreg/TerraFirmaCraft, for easier management of waypoints when you want to mark all those surface ores you find on the map.
 Comes with a configuration preset for TerraFirmaGreg.
 
-This mod is for Minecraft 1.20.1, and uses Forge 47.4.13 (__targets TFG-Modern *0.13.7*__).
+This mod depends on **Xaero's Minimap version 26.4.2** (XaeroLib 1.7.1) for **Minecraft 1.20.1**, and uses Forge 47.4.13 (__targets TFG-Modern *0.13.7*__).
 
 ---
 
