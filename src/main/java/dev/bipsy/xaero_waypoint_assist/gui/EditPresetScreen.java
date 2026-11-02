@@ -4,28 +4,29 @@ import dev.bipsy.xaero_waypoint_assist.PresetManager;
 import dev.bipsy.xaero_waypoint_assist.WaypointPreset;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import xaero.hud.minimap.waypoint.WaypointColor;
+import xaero.lib.client.gui.ScreenBase;
+import xaero.lib.client.gui.widget.dropdown.DropDownWidget;
+import xaero.lib.client.gui.widget.dropdown.IDropDownWidgetCallback;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class EditPresetScreen extends Screen {
-    private final PresetConfigScreen parent;
+public class EditPresetScreen extends ScreenBase implements IDropDownWidgetCallback {
+    private final PresetConfigScreen parentScreen;
     private final WaypointPreset existingPreset;
     private final int editIndex;
 
     private EditBox nameField;
     private EditBox abbreviationField;
+    private DropDownWidget colorDD;
     private int selectedColorIndex;
 
     public EditPresetScreen(PresetConfigScreen parent, WaypointPreset existingPreset, int editIndex) {
-        super(Component.literal(existingPreset == null ? "Add Waypoint Preset" : "Edit Waypoint Preset"));
-        this.parent = parent;
+        super(parent, parent, Component.literal(existingPreset == null ? "Add Waypoint Preset" : "Edit Waypoint Preset"));
+        this.parentScreen = parent;
         this.existingPreset = existingPreset;
         this.editIndex = editIndex;
         this.selectedColorIndex = existingPreset != null ? existingPreset.colorIndex : 0;
@@ -33,6 +34,8 @@ public class EditPresetScreen extends Screen {
 
     @Override
     protected void init() {
+        super.init();
+
         int centerX = this.width / 2;
         int fieldWidth = 200;
         int fieldHeight = 20;
@@ -41,38 +44,34 @@ public class EditPresetScreen extends Screen {
         this.nameField = new EditBox(this.font, centerX - fieldWidth / 2, 50, fieldWidth, fieldHeight, Component.literal("Preset Name"));
         this.nameField.setValue(this.existingPreset != null ? this.existingPreset.name : "");
         this.nameField.setMaxLength(32);
-        this.addWidget(this.nameField);
+        this.addRenderableWidget(this.nameField);
 
         // Abbreviation Field
         this.abbreviationField = new EditBox(this.font, centerX - fieldWidth / 2, 95, fieldWidth, fieldHeight, Component.literal("Abbreviation"));
         this.abbreviationField.setValue(this.existingPreset != null ? this.existingPreset.abbreviation : "");
         this.abbreviationField.setMaxLength(8);
-        this.addWidget(this.abbreviationField);
+        this.addRenderableWidget(this.abbreviationField);
 
-        // Color CycleButton (all colors from WaypointColor)
-        List<Integer> colorIndices = new ArrayList<>();
-        int colorCount = WaypointColor.values().length;
-        for (int i = 0; i < colorCount; i++) {
-            colorIndices.add(i);
+        // Color DropDownWidget
+        WaypointColor[] colors = WaypointColor.values();
+        Component[] colorOptions = new Component[colors.length];
+        for (int i = 0; i < colors.length; i++) {
+            WaypointColor color = colors[i];
+            colorOptions[i] = color.getName().copy().withStyle(style -> style.withColor(color.getHex()));
         }
 
-        CycleButton<Integer> colorButton = CycleButton.<Integer>builder(index -> {
-            try {
-                WaypointColor color = WaypointColor.fromIndex(index);
-                if (color != null) {
-                    int hex = color.getHex();
-                    return color.getName().copy().withStyle(style -> style.withColor(hex));
-                }
-            } catch (Exception ignored) {}
-            return Component.literal(String.valueOf(index));
-        })
-        .withValues(colorIndices)
-        .withInitialValue(this.selectedColorIndex)
-        .create(centerX - fieldWidth / 2, 140, fieldWidth, fieldHeight, Component.literal("Color"), (btn, val) -> {
-            this.selectedColorIndex = val;
-        });
+        this.colorDD = DropDownWidget.Builder.begin()
+                .setOptions(colorOptions)
+                .setX(centerX - fieldWidth / 2)
+                .setY(140)
+                .setW(fieldWidth)
+                .setSelected(this.selectedColorIndex)
+                .setCallback(this)
+                .setContainer(this)
+                .setNarrationTitle(Component.literal("Color"))
+                .build();
 
-        this.addRenderableWidget(colorButton);
+        this.addWidget(this.colorDD);
 
         // Save & Cancel Buttons
         int buttonWidth = 95;
@@ -82,9 +81,18 @@ public class EditPresetScreen extends Screen {
 
         this.addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, b -> {
             if (this.minecraft != null) {
-                this.minecraft.setScreen(this.parent);
+                this.minecraft.setScreen(this.parentScreen);
             }
         }).bounds(centerX + fieldWidth / 2 - buttonWidth, 180, buttonWidth, fieldHeight).build());
+    }
+
+    @Override
+    public boolean onSelected(DropDownWidget dropdown, int selectedIndex) {
+        if (dropdown == this.colorDD && selectedIndex >= 0) {
+            this.selectedColorIndex = selectedIndex;
+            return true;
+        }
+        return false;
     }
 
     private void savePreset() {
@@ -110,8 +118,8 @@ public class EditPresetScreen extends Screen {
         }
 
         if (this.minecraft != null) {
-            this.parent.refreshList();
-            this.minecraft.setScreen(this.parent);
+            this.parentScreen.refreshList();
+            this.minecraft.setScreen(this.parentScreen);
         }
     }
 
@@ -124,11 +132,7 @@ public class EditPresetScreen extends Screen {
         int fieldWidth = 200;
 
         guiGraphics.drawString(this.font, "Waypoint Name:", centerX - fieldWidth / 2, 38, 0xA0A0A0);
-        this.nameField.render(guiGraphics, mouseX, mouseY, partialTick);
-
         guiGraphics.drawString(this.font, "Abbreviation / Initial:", centerX - fieldWidth / 2, 83, 0xA0A0A0);
-        this.abbreviationField.render(guiGraphics, mouseX, mouseY, partialTick);
-
         guiGraphics.drawString(this.font, "Color:", centerX - fieldWidth / 2, 128, 0xA0A0A0);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
