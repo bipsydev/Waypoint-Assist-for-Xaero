@@ -49,9 +49,10 @@ public class EditPresetScreen extends Screen {
         this.abbreviationField.setMaxLength(8);
         this.addWidget(this.abbreviationField);
 
-        // Color CycleButton (indices 0 to 15)
+        // Color CycleButton (all colors from WaypointColor)
         List<Integer> colorIndices = new ArrayList<>();
-        for (int i = 0; i < 16; i++) {
+        int colorCount = WaypointColor.values().length;
+        for (int i = 0; i < colorCount; i++) {
             colorIndices.add(i);
         }
 
@@ -59,7 +60,8 @@ public class EditPresetScreen extends Screen {
             try {
                 WaypointColor color = WaypointColor.fromIndex(index);
                 if (color != null) {
-                    return Component.literal(index + " - " + color.name());
+                    int hex = color.getHex();
+                    return color.getName().copy().withStyle(style -> style.withColor(hex));
                 }
             } catch (Exception ignored) {}
             return Component.literal(String.valueOf(index));

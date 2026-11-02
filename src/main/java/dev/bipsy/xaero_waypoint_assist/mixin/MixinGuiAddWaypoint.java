@@ -38,7 +38,17 @@ public abstract class MixinGuiAddWaypoint
 
         Screen screen = (Screen) (Object) this;
 
-        CycleButton<WaypointPreset> presetDropdown = CycleButton.builder((WaypointPreset preset) -> Component.literal(preset.name))
+        CycleButton<WaypointPreset> presetDropdown = CycleButton.builder((WaypointPreset preset) -> {
+            WaypointColor color = null;
+            try {
+                color = WaypointColor.fromIndex(preset.colorIndex);
+            } catch (Exception ignored) {}
+            if (color != null) {
+                int hex = color.getHex();
+                return Component.literal(preset.name).withStyle(style -> style.withColor(hex));
+            }
+            return Component.literal(preset.name);
+        })
                 .withValues(presets)
                 .create(screen.width / 2 - 100, 10, 200, 20, Component.literal("Preset"), (button, selectedPreset) -> {
                     if (this.nameTextField != null) {

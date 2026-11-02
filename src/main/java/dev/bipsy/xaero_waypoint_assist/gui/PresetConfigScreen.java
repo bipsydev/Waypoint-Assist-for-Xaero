@@ -146,17 +146,21 @@ public class PresetConfigScreen extends Screen {
 
             @Override
             public void render(GuiGraphics guiGraphics, int entryIndex, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float partialTick) {
-                int colorHex = 0xFFFFFF;
+                WaypointColor color = null;
                 try {
-                    WaypointColor color = WaypointColor.fromIndex(this.preset.colorIndex);
-                    if (color != null) {
-                        // Approximate or derive display color if available
-                        colorHex = 0xFFFFFF;
-                    }
+                    color = WaypointColor.fromIndex(this.preset.colorIndex);
                 } catch (Exception ignored) {}
 
-                String displayText = this.preset.name + " [" + this.preset.abbreviation + "] (Color: " + this.preset.colorIndex + ")";
-                guiGraphics.drawString(PresetConfigScreen.this.font, displayText, left + 4, top + 6, colorHex);
+                net.minecraft.network.chat.MutableComponent displayText = Component.literal(this.preset.name + " [" + this.preset.abbreviation + "] (");
+                if (color != null) {
+                    int hex = color.getHex();
+                    displayText.append(color.getName().copy().withStyle(style -> style.withColor(hex)));
+                } else {
+                    displayText.append(Component.literal(String.valueOf(this.preset.colorIndex)));
+                }
+                displayText.append(")");
+
+                guiGraphics.drawString(PresetConfigScreen.this.font, displayText, left + 4, top + 6, 0xFFFFFF);
 
                 int right = left + entryWidth;
                 this.deleteButton.setX(right - 22);
