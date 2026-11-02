@@ -32,6 +32,9 @@ public abstract class MixinGuiAddWaypoint
     @Shadow private WaypointEditForm getCurrent() {
         throw new AssertionError();
     }
+    @Shadow private void updateConfirmButton() {
+        throw new AssertionError();
+    }
 
     @Inject(method = "init", at = @At("TAIL"), remap = false)
     private void injectPresetDropdown(CallbackInfo ci)
@@ -71,33 +74,47 @@ public abstract class MixinGuiAddWaypoint
                 .setCallback((dropdown, selectedIndex) -> {
                     if (selectedIndex > 0 && selectedIndex <= presets.size()) {
                         WaypointPreset selectedPreset = presets.get(selectedIndex - 1);
+                        String presetName = selectedPreset.name != null ? selectedPreset.name : "";
+                        String presetInitial = selectedPreset.abbreviation != null ? selectedPreset.abbreviation : "";
+                        WaypointColor presetColor = WaypointColor.fromIndex(selectedPreset.colorIndex);
+
                         if (this.nameTextField != null) {
-                            this.nameTextField.setValue(selectedPreset.name);
+                            this.nameTextField.setValue(presetName);
                         }
                         if (this.initialTextField != null) {
-                            this.initialTextField.setValue(selectedPreset.abbreviation);
+                            this.initialTextField.setValue(presetInitial);
                         }
                         WaypointEditForm currentForm = this.getCurrent();
                         if (currentForm != null) {
-                            currentForm.color = WaypointColor.fromIndex(selectedPreset.colorIndex);
+                            currentForm.name = presetName;
+                            currentForm.initial = presetInitial;
+                            currentForm.autoInitial = false;
+                            currentForm.color = presetColor;
                         }
                         if (this.colorDD != null) {
                             this.colorDD.selectId(selectedPreset.colorIndex, false);
                         }
+                        try {
+                            this.updateConfirmButton();
+                        } catch (Exception ignored) {}
                     } else if (selectedIndex == presets.size() + 1) {
                         String name = this.nameTextField != null ? this.nameTextField.getValue().trim() : "";
+                        if (name.isEmpty()) {
+                            Minecraft mc = Minecraft.getInstance();
+                            if (mc != null) {
+                                mc.setScreen(screen);
+                            }
+                            return true;
+                        }
+
                         String initial = this.initialTextField != null ? this.initialTextField.getValue().trim() : "";
+                        if (initial.isEmpty()) {
+                            initial = name.length() >= 2 ? name.substring(0, 2).toUpperCase() : name.toUpperCase();
+                        }
                         int colorIndex = 0;
                         WaypointEditForm currentForm = this.getCurrent();
                         if (currentForm != null && currentForm.color != null) {
                             colorIndex = currentForm.color.ordinal();
-                        }
-
-                        if (name.isEmpty()) {
-                            name = "New Preset";
-                        }
-                        if (initial.isEmpty()) {
-                            initial = name.length() >= 2 ? name.substring(0, 2).toUpperCase() : name.toUpperCase();
                         }
 
                         WaypointPreset newPreset = new WaypointPreset(name, initial, colorIndex);
