@@ -5,6 +5,7 @@ import dev.bipsy.xaero_waypoint_assist.WaypointPreset;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import xaero.hud.minimap.waypoint.WaypointColor;
@@ -15,7 +16,7 @@ import xaero.lib.client.gui.widget.dropdown.IDropDownWidgetCallback;
 import java.util.List;
 
 public class EditPresetScreen extends ScreenBase implements IDropDownWidgetCallback {
-    private final PresetConfigScreen parentScreen;
+    private final Screen parentScreen;
     private final WaypointPreset existingPreset;
     private final int editIndex;
 
@@ -24,7 +25,7 @@ public class EditPresetScreen extends ScreenBase implements IDropDownWidgetCallb
     private DropDownWidget colorDD;
     private int selectedColorIndex;
 
-    public EditPresetScreen(PresetConfigScreen parent, WaypointPreset existingPreset, int editIndex) {
+    public EditPresetScreen(Screen parent, WaypointPreset existingPreset, int editIndex) {
         super(parent, parent, Component.literal(existingPreset == null ? "Add Waypoint Preset" : "Edit Waypoint Preset"));
         this.parentScreen = parent;
         this.existingPreset = existingPreset;
@@ -118,7 +119,9 @@ public class EditPresetScreen extends ScreenBase implements IDropDownWidgetCallb
         }
 
         if (this.minecraft != null) {
-            this.parentScreen.refreshList();
+            if (this.parentScreen instanceof PresetConfigScreen configScreen) {
+                configScreen.refreshList();
+            }
             this.minecraft.setScreen(this.parentScreen);
         }
     }

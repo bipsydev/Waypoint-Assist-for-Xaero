@@ -2,6 +2,8 @@ package dev.bipsy.xaero_waypoint_assist.mixin;
 
 import dev.bipsy.xaero_waypoint_assist.PresetManager;
 import dev.bipsy.xaero_waypoint_assist.WaypointPreset;
+import dev.bipsy.xaero_waypoint_assist.gui.EditPresetScreen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -18,6 +20,7 @@ import xaero.hud.minimap.waypoint.WaypointColor;
 import xaero.lib.client.gui.ScreenBase;
 import xaero.lib.client.gui.widget.dropdown.DropDownWidget;
 
+import java.util.Collections;
 import java.util.List;
 
 @Mixin(value = GuiAddWaypoint.class, remap = false)
@@ -33,15 +36,13 @@ public abstract class MixinGuiAddWaypoint
     @Inject(method = "init", at = @At("TAIL"), remap = false)
     private void injectPresetDropdown(CallbackInfo ci)
     {
-        List<WaypointPreset> presets = PresetManager.getInstance().getPresets();
-        if (presets == null || presets.isEmpty()) {
-            return;
-        }
+        List<WaypointPreset> loadedPresets = PresetManager.getInstance().getPresets();
+        final List<WaypointPreset> presets = loadedPresets != null ? loadedPresets : Collections.emptyList();
 
         Screen screen = (Screen) (Object) this;
         ScreenBase screenBase = (ScreenBase) (Object) this;
 
-        Component[] options = new Component[presets.size() + 1];
+        Component[] options = new Component[presets.size() + 3];
         options[0] = Component.literal("No Preset");
         for (int i = 0; i < presets.size(); i++) {
             WaypointPreset preset = presets.get(i);
@@ -56,6 +57,8 @@ public abstract class MixinGuiAddWaypoint
                 options[i + 1] = Component.literal(preset.name);
             }
         }
+        options[presets.size() + 1] = Component.literal("Copy current to Preset");
+        options[presets.size() + 2] = Component.literal("New Preset...");
 
         DropDownWidget presetDropdown = DropDownWidget.Builder.begin()
                 .setOptions(options)
@@ -80,6 +83,34 @@ public abstract class MixinGuiAddWaypoint
                         }
                         if (this.colorDD != null) {
                             this.colorDD.selectId(selectedPreset.colorIndex, false);
+                        }
+                    } else if (selectedIndex == presets.size() + 1) {
+                        String name = this.nameTextField != null ? this.nameTextField.getValue().trim() : "";
+                        String initial = this.initialTextField != null ? this.initialTextField.getValue().trim() : "";
+                        int colorIndex = 0;
+                        WaypointEditForm currentForm = this.getCurrent();
+                        if (currentForm != null && currentForm.color != null) {
+                            colorIndex = currentForm.color.ordinal();
+                        }
+
+                        if (name.isEmpty()) {
+                            name = "New Preset";
+                        }
+                        if (initial.isEmpty()) {
+                            initial = name.length() >= 2 ? name.substring(0, 2).toUpperCase() : name.toUpperCase();
+                        }
+
+                        WaypointPreset newPreset = new WaypointPreset(name, initial, colorIndex);
+                        PresetManager.getInstance().addPreset(newPreset);
+
+                        Minecraft mc = Minecraft.getInstance();
+                        if (mc != null) {
+                            mc.setScreen(screen);
+                        }
+                    } else if (selectedIndex == presets.size() + 2) {
+                        Minecraft mc = Minecraft.getInstance();
+                        if (mc != null) {
+                            mc.setScreen(new EditPresetScreen(screen, null, -1));
                         }
                     }
                     return true;
