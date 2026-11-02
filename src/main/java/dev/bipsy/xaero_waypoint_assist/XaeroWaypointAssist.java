@@ -15,8 +15,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
-// The value here should match an entry in the META-INF/mods.toml file
-@Mod(XaeroWaypointAssist.MODID)
+
+/**
+ * The main mod class that defines the mod to Forge and registers the config screen.
+ */
+@Mod(XaeroWaypointAssist.MODID) // The value here should match an entry in the META-INF/mods.toml file
 public class XaeroWaypointAssist {
 
     // Define mod id in a common place for everything to reference
@@ -24,14 +27,14 @@ public class XaeroWaypointAssist {
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public XaeroWaypointAssist() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public XaeroWaypointAssist(FMLJavaModLoadingContext context) {
+        IEventBus modEventBus = context.getModEventBus();
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
         // Register in-game config screen under Mods menu
-        ModLoadingContext.get().registerExtensionPoint(
+        context.registerExtensionPoint(
                 ConfigScreenHandler.ConfigScreenFactory.class,
                 () -> new ConfigScreenHandler.ConfigScreenFactory((mc, screen) -> new PresetManagerConfigScreen(screen))
         );
