@@ -3,8 +3,6 @@ package dev.bipsy.xaero_waypoint_assist.mixin;
 import dev.bipsy.xaero_waypoint_assist.PresetManager;
 import dev.bipsy.xaero_waypoint_assist.WaypointPreset;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -43,7 +41,8 @@ public abstract class MixinGuiAddWaypoint
         Screen screen = (Screen) (Object) this;
         ScreenBase screenBase = (ScreenBase) (Object) this;
 
-        Component[] options = new Component[presets.size()];
+        Component[] options = new Component[presets.size() + 1];
+        options[0] = Component.literal("No Preset");
         for (int i = 0; i < presets.size(); i++) {
             WaypointPreset preset = presets.get(i);
             WaypointColor color = null;
@@ -52,9 +51,9 @@ public abstract class MixinGuiAddWaypoint
             } catch (Exception ignored) {}
             if (color != null) {
                 int hex = color.getHex();
-                options[i] = Component.literal(preset.name).withStyle(style -> style.withColor(hex));
+                options[i + 1] = Component.literal(preset.name).withStyle(style -> style.withColor(hex));
             } else {
-                options[i] = Component.literal(preset.name);
+                options[i + 1] = Component.literal(preset.name);
             }
         }
 
@@ -63,13 +62,12 @@ public abstract class MixinGuiAddWaypoint
                 .setX(screen.width / 2 - 100)
                 .setY(10)
                 .setW(200)
-                .setHasEmptyOption(true)
-                .setSelected(null)
+                .setSelected(0)
                 .setContainer(screenBase)
                 .setNarrationTitle(Component.literal("Preset"))
                 .setCallback((dropdown, selectedIndex) -> {
-                    if (selectedIndex >= 0 && selectedIndex < presets.size()) {
-                        WaypointPreset selectedPreset = presets.get(selectedIndex);
+                    if (selectedIndex > 0 && selectedIndex <= presets.size()) {
+                        WaypointPreset selectedPreset = presets.get(selectedIndex - 1);
                         if (this.nameTextField != null) {
                             this.nameTextField.setValue(selectedPreset.name);
                         }
